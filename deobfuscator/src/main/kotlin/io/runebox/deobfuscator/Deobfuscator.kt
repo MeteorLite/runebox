@@ -1,6 +1,8 @@
 package io.runebox.deobfuscator
 
 import io.runebox.asm.tree.ClassPool
+import io.runebox.deobfuscator.transformer.ControlFlowFixer
+import io.runebox.deobfuscator.transformer.DeadCodeRemover
 import io.runebox.deobfuscator.transformer.RuntimeExceptionRemover
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
@@ -31,6 +33,8 @@ object Deobfuscator {
 
     init {
         transform<RuntimeExceptionRemover>()
+        transform<DeadCodeRemover>()
+        transform<ControlFlowFixer>()
     }
 
     fun run(inputJar: File, outputJar: File, runTestClient: Boolean = false) {
