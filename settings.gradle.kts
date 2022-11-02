@@ -7,3 +7,4 @@ rootProject.name = "runebox"
 include(":asm")
 include(":deobfuscator")
 include(":mapper")
+include(":logger")

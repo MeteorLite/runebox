@@ -2,6 +2,7 @@ package io.runebox.asm.tree
 
 import io.runebox.asm.util.field
 import io.runebox.asm.util.nullField
+import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
@@ -39,4 +40,17 @@ fun ClassNode.resolveField(name: String, desc: String): FieldNode? {
         return superCls.resolveField(name, desc) ?: continue
     }
     return getField(name, desc)
+}
+
+fun ClassNode.toByteArray(): ByteArray {
+    val writer = ClassWriter(ClassWriter.COMPUTE_MAXS)
+    accept(writer)
+    return writer.toByteArray()
+}
+
+fun ClassNode.copyOf(): ClassNode {
+    val cls = ClassNode()
+    cls.ignored = ignored
+    cls.obfId = obfId
+    return cls
 }
