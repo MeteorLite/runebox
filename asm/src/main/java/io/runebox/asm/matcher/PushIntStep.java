@@ -19,8 +19,8 @@ package io.runebox.asm.matcher;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.LdcInsnNode;
 
-public class LoadIntStep extends OpcodeStep {
-    public LoadIntStep() {
+public class PushIntStep extends OpcodeStep {
+    public PushIntStep() {
         super((a) -> 
         {
         	if(!(a instanceof LdcInsnNode))

@@ -14,7 +14,6 @@ tasks.register<JavaExec>("download-gamepack") {
 }
 
 tasks.register<JavaExec>("deobfuscate-gamepack") {
-    dependsOn(tasks.build)
     group = "tools"
     mainClass.set("io.runebox.deobfuscator.Deobfuscator")
     workingDir = rootProject.projectDir

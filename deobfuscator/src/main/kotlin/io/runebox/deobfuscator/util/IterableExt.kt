@@ -1,8 +1,11 @@
 package io.runebox.deobfuscator.util
 
-fun <T> MutableIterable<T>.iterate(block: MutableIterator<T>.(T) -> Unit) {
-    val itr = this.iterator()
+inline fun <T> MutableIterable<T>.iterate(block: MutableIteratorBlock<T>.(T) -> Unit) {
+    val itr = MutableIteratorBlock(this.iterator())
     while(itr.hasNext()) {
-        itr.block(itr.next())
+        val it = itr.next()
+        itr.block(it)
     }
 }
+
+class MutableIteratorBlock<T>(private val itr: MutableIterator<T>) : MutableIterator<T> by itr

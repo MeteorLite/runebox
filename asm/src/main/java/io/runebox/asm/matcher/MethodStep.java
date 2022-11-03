@@ -20,14 +20,14 @@ import io.runebox.asm.utils.TransformerHelper;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 
-public class InvocationStep implements Step {
+public class MethodStep implements Step {
     private final int opcode;
     private final String owner;
     private final String name;
     private final String desc;
     private final boolean basic;
 
-    public InvocationStep(int opcode, String owner, String name, String desc, boolean basic) {
+    public MethodStep(int opcode, String owner, String name, String desc, boolean basic) {
         this.opcode = opcode;
         this.owner = owner;
         this.name = name;

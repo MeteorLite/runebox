@@ -219,6 +219,19 @@ public class Utils {
         return false;
     }
 
+    public static boolean isReturn(AbstractInsnNode next) {
+        switch (next.getOpcode()) {
+            case RETURN:
+            case ARETURN:
+            case IRETURN:
+            case FRETURN:
+            case DRETURN:
+            case LRETURN:
+                return true;
+        }
+        return false;
+    }
+
     public static boolean willPushToStack(int opcode) {
         switch (opcode) {
             case ACONST_NULL:

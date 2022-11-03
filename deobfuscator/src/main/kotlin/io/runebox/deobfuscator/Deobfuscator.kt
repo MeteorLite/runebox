@@ -1,9 +1,7 @@
 package io.runebox.deobfuscator
 
-import io.runebox.asm.tree.ClassPool
-import io.runebox.deobfuscator.transformer.ControlFlowFixer
-import io.runebox.deobfuscator.transformer.DeadCodeRemover
-import io.runebox.deobfuscator.transformer.RuntimeExceptionRemover
+import io.runebox.asm.tree.*
+import io.runebox.deobfuscator.transformer.*
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.cli.default
@@ -35,6 +33,8 @@ object Deobfuscator {
         transform<RuntimeExceptionRemover>()
         transform<DeadCodeRemover>()
         transform<ControlFlowFixer>()
+        transform<Renamer>()
+        transform<OpaquePredicateRemover>()
     }
 
     fun run(inputJar: File, outputJar: File, runTestClient: Boolean = false) {
@@ -50,11 +50,15 @@ object Deobfuscator {
 
         pool.addJar(inputJar)
         pool.ignoreClasses {
-            it.name.contains("bouncycastle") || it.name.contains("json") || it.name.contains("jagex")
+            it.name.contains("bouncycastle") ||
+            it.name.contains("json")
         }
-
+        pool.buildHierarchy()
         Logger.info("Loaded ${pool.classes.size} classes from input jar file.")
 
+        /*
+         * Run bytecode transformers.
+         */
         Logger.info("Running ${transformers.size} bytecode transforms on classes.")
         transformers.forEach { transformer ->
             Logger.info("Running transformer: '${transformer::class.simpleName}'.")
@@ -79,5 +83,9 @@ object Deobfuscator {
 
     private inline fun <reified T : Transformer> transform() {
         transformers.add(T::class.createInstance())
+    }
+
+    fun String.isObfuscatedName(): Boolean {
+        return (this.length <= 3 && this !in arrayOf("run", "add", "put", "set", "get")) || (arrayOf("class", "method", "field").any { this.startsWith(it) })
     }
 }
