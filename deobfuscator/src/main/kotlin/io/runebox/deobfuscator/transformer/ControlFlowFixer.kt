@@ -1,6 +1,7 @@
 package io.runebox.deobfuscator.transformer
 
 import io.runebox.asm.LabelMap
+import io.runebox.asm.graph.Converter
 import io.runebox.asm.tree.ClassPool
 import io.runebox.asm.tree.owner
 import io.runebox.deobfuscator.Transformer
@@ -47,6 +48,7 @@ class ControlFlowFixer : Transformer {
                 count += cfg.blocks.size
             }
         }
+
 
         Logger.info("Reordered $count method control-flow blocks.")
     }

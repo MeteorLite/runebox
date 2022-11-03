@@ -35,6 +35,7 @@ object Deobfuscator {
         transform<ControlFlowFixer>()
         transform<Renamer>()
         transform<OpaquePredicateRemover>()
+        transform<MultiplierRemover>()
     }
 
     fun run(inputJar: File, outputJar: File, runTestClient: Boolean = false) {

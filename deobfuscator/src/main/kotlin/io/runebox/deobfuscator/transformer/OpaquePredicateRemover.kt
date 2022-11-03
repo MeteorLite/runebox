@@ -4,6 +4,7 @@ import com.google.common.collect.MultimapBuilder
 import io.runebox.asm.matcher.*
 import io.runebox.asm.tree.*
 import io.runebox.asm.util.InstructionModifier
+import io.runebox.asm.util.field
 import io.runebox.asm.utils.Utils
 import io.runebox.asm.utils.Utils.isReturn
 import io.runebox.deobfuscator.Deobfuscator.isObfuscatedName
@@ -135,7 +136,7 @@ class OpaquePredicateRemover : Transformer {
         return Type.getMethodDescriptor(type.returnType, *type.argumentTypes.copyOf(type.argumentTypes.size - 1))
     }
 
-    private val ClassPool.classNames get() = allClasses.associateBy { it.name }
+    private val ClassPool.classNames by field { pool -> pool.allClasses.associateBy { it.name } }
 
     private fun ClassPool.findSupers(cls: ClassNode): Collection<ClassNode> {
         return cls.interfaces.plus(cls.superName).mapNotNull { classNames[it] }.flatMap { findSupers(it).plus(it) }
