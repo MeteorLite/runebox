@@ -1,7 +1,6 @@
 package io.runebox.deobfuscator
 
 import io.runebox.asm.tree.*
-import io.runebox.deobfuscator.transformer.*
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.cli.default
@@ -27,15 +26,8 @@ object Deobfuscator {
     private var runTestClient = false
 
     private val pool = ClassPool()
-    private val transformers = mutableListOf<Transformer>()
 
     init {
-        transform<RuntimeExceptionRemover>()
-        transform<DeadCodeRemover>()
-        transform<ControlFlowFixer>()
-        transform<Renamer>()
-        transform<OpaquePredicateRemover>()
-        transform<MultiplierRemover>()
     }
 
     fun run(inputJar: File, outputJar: File, runTestClient: Boolean = false) {
@@ -60,14 +52,6 @@ object Deobfuscator {
         /*
          * Run bytecode transformers.
          */
-        Logger.info("Running ${transformers.size} bytecode transforms on classes.")
-        transformers.forEach { transformer ->
-            Logger.info("Running transformer: '${transformer::class.simpleName}'.")
-            val start = System.currentTimeMillis()
-            transformer.run(pool)
-            Logger.info("Finished transform in ${System.currentTimeMillis() - start}ms.")
-        }
-        Logger.info("Successfully ran all bytecode transforms.")
 
         Logger.info("Saving deobfuscated classes to output jar.")
         if(outputJar.exists()) outputJar.deleteRecursively()
@@ -80,10 +64,6 @@ object Deobfuscator {
         }
 
         Logger.info("Deobfuscator complete. Exiting process.")
-    }
-
-    private inline fun <reified T : Transformer> transform() {
-        transformers.add(T::class.createInstance())
     }
 
     fun String.isObfuscatedName(): Boolean {
