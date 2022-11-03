@@ -10,6 +10,7 @@ dependencies {
     api("org.ow2.asm:asm-tree:_")
     api("com.google.guava:guava:_")
     api("org.jetbrains.kotlinx:kotlinx-serialization-json:_")
+    implementation("com.squareup:kotlinpoet:_")
 }
 
 java {

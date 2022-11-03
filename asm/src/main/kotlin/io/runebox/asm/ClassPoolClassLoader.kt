@@ -1,11 +1,8 @@
-package io.runebox.asm.common
+package io.runebox.asm
 
-import io.runebox.asm.ClassPool
-import io.runebox.asm.createOutputStream
 import io.runebox.asm.file.ClassFile
 import io.runebox.asm.reflect.ClassInfo
 import io.runebox.asm.reflect.ClassInfoLoader
-import io.runebox.asm.toByteArray
 import java.io.DataInputStream
 import java.io.OutputStream
 

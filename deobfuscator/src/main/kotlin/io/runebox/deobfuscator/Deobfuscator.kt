@@ -1,5 +1,6 @@
 package io.runebox.deobfuscator
 
+import io.runebox.asm.ClassPool
 import io.runebox.asm.tree.*
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
@@ -39,28 +40,6 @@ object Deobfuscator {
 
         if(!inputJar.exists()) {
             throw FileNotFoundException("Input jar (${inputJar.path}) does not exist.")
-        }
-
-        pool.addJar(inputJar)
-        pool.ignoreClasses {
-            it.name.contains("bouncycastle") ||
-            it.name.contains("json")
-        }
-        pool.buildHierarchy()
-        Logger.info("Loaded ${pool.classes.size} classes from input jar file.")
-
-        /*
-         * Run bytecode transformers.
-         */
-
-        Logger.info("Saving deobfuscated classes to output jar.")
-        if(outputJar.exists()) outputJar.deleteRecursively()
-        pool.writeJar(outputJar)
-        Logger.info("Succesfully saved output jar.")
-
-        if(runTestClient) {
-            Logger.info("Starting test client using output jar.")
-            TestClient(outputJar, inputJar).start()
         }
 
         Logger.info("Deobfuscator complete. Exiting process.")

@@ -1,22 +1,27 @@
 package io.runebox.asm
 
-import java.io.File
-import java.util.jar.JarFile
+import io.runebox.asm.tree.ArithExpr
+import io.runebox.asm.tree.CallStaticExpr
+import org.objectweb.asm.tree.MethodNode
 
 object Test {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val pool = ClassPool()
-        val jarFile = File("build/workspace/gamepack.jar")
-        JarFile(jarFile).use { jar ->
-            jar.entries().asSequence().forEach { entry ->
-                if(entry.name.endsWith(".class")) {
-                    pool.addClass(jar.getInputStream(entry).readAllBytes())
-                }
-            }
-        }
+        val method = MethodNode()
+        method.execution(object : ExprVisitor() {
 
-        println("Loaded ${pool.classes.size} classes.")
+            // INVOKESTATIC FRAMES
+            override fun visitCallStaticExpr(expr: CallStaticExpr) {
+                val m = expr.method().name()
+            }
+
+            // BINARY MATH OPARATION FRAMES
+            override fun visitArithExpr(expr: ArithExpr) {
+                val operator = expr.operation()
+                val left = expr.left()
+                val right = expr.right()
+            }
+        })
     }
 }

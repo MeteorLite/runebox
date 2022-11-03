@@ -36,17 +36,17 @@ public class PersistentBloatContext extends BloatContext {
 
 	protected final ClassHierarchy hierarchy;
 
-	protected Map classInfos; // Maps Strings to ClassInfos
+	public Map<String, ClassInfo> classInfos; // Maps Strings to ClassInfos
 
-	protected Map methodInfos; // Maps MemberRefs to MethodInfos
+	public Map<MemberRef, MethodInfo> methodInfos; // Maps MemberRefs to MethodInfos
 
-	protected Map fieldInfos; // Maps MemberRefs to FieldInfos
+	public Map<MemberRef, FieldInfo> fieldInfos; // Maps MemberRefs to FieldInfos
 
-	protected Map classEditors; // Maps ClassInfos to ClassEditors
+	public Map<ClassInfo, ClassEditor> classEditors; // Maps ClassInfos to ClassEditors
 
-	protected Map methodEditors; // Maps MethodInfos to MethodEditors
+	public Map<MethodInfo, MethodEditor> methodEditors; // Maps MethodInfos to MethodEditors
 
-	protected Map fieldEditors; // Maps MethodInfos to FieldEditors
+	public Map<FieldInfo, FieldEditor> fieldEditors; // Maps MethodInfos to FieldEditors
 
 	public static boolean DB_COMMIT = false;
 
@@ -81,13 +81,13 @@ public class PersistentBloatContext extends BloatContext {
 
 		// Create a bunch of the mappings we maintain. Make sure to do
 		// this before anything else!
-		classInfos = new HashMap();
-		methodInfos = new HashMap();
-		fieldInfos = new HashMap();
+		classInfos = new HashMap<>();
+		methodInfos = new HashMap<MemberRef, MethodInfo>();
+		fieldInfos = new HashMap<MemberRef, FieldInfo>();
 
-		classEditors = new HashMap();
-		methodEditors = new HashMap();
-		fieldEditors = new HashMap();
+		classEditors = new HashMap<>();
+		methodEditors = new HashMap<MethodInfo, MethodEditor>();
+		fieldEditors = new HashMap<FieldInfo, FieldEditor>();
 
 		// Have to create an empty class hierarchy then add the classes.
 		// There is a strange circular dependence between the hierarchy
@@ -115,7 +115,7 @@ public class PersistentBloatContext extends BloatContext {
 		className = className.replace('.', '/').intern();
 
 		// Check the cache of ClassInfos
-		ClassInfo info = (ClassInfo) classInfos.get(className);
+		ClassInfo info = classInfos.get(className);
 
 		if (info == null) {
 			BloatContext.db("BloatContext: Loading class " + className);
@@ -165,7 +165,7 @@ public class PersistentBloatContext extends BloatContext {
 
 		className = className.intern();
 
-		ClassInfo info = (ClassInfo) classInfos.get(className);
+		ClassInfo info = classInfos.get(className);
 
 		if (info == null) {
 			info = loadClass(className);
@@ -183,7 +183,7 @@ public class PersistentBloatContext extends BloatContext {
 
 	public ClassEditor editClass(final ClassInfo info) {
 		// Check the cache
-		ClassEditor ce = (ClassEditor) classEditors.get(info);
+		ClassEditor ce = classEditors.get(info);
 
 		if (ce == null) {
 			ce = new ClassEditor(this, info);
@@ -204,7 +204,7 @@ public class PersistentBloatContext extends BloatContext {
 			throws NoSuchMethodException {
 
 		// Check the MethodInfo cache
-		final MethodInfo info = (MethodInfo) methodInfos.get(method);
+		final MethodInfo info = methodInfos.get(method);
 
 		if (info == null) {
 			// Groan, we have to do this the HARD way.
@@ -245,7 +245,7 @@ public class PersistentBloatContext extends BloatContext {
 
 	public MethodEditor editMethod(final MethodInfo info) {
 		// Check methodEditors cache
-		MethodEditor me = (MethodEditor) methodEditors.get(info);
+		MethodEditor me = methodEditors.get(info);
 
 		if (me == null) {
 			me = new MethodEditor(editClass(info.declaringClass()), info);
@@ -261,7 +261,7 @@ public class PersistentBloatContext extends BloatContext {
 			throws NoSuchFieldException {
 
 		// Just like we had to do with methods
-		final FieldInfo info = (FieldInfo) fieldInfos.get(field);
+		final FieldInfo info = fieldInfos.get(field);
 
 		if (info == null) {
 			final NameAndType nat = field.nameAndType();
@@ -295,7 +295,7 @@ public class PersistentBloatContext extends BloatContext {
 
 	public FieldEditor editField(final FieldInfo info) {
 		// Check the cache
-		FieldEditor fe = (FieldEditor) fieldEditors.get(info);
+		FieldEditor fe = fieldEditors.get(info);
 
 		if (fe == null) {
 			fe = new FieldEditor(editClass(info.declaringClass()), info);

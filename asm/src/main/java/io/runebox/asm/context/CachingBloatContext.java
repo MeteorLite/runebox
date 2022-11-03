@@ -76,7 +76,7 @@ public class CachingBloatContext extends PersistentBloatContext {
 
 	public ClassEditor editClass(final ClassInfo info) {
 		// Check the cache
-		ClassEditor ce = (ClassEditor) classEditors.get(info);
+		ClassEditor ce = classEditors.get(info);
 
 		if (ce == null) {
 			ce = new ClassEditor(this, info);
@@ -102,7 +102,7 @@ public class CachingBloatContext extends PersistentBloatContext {
 			throws NoSuchMethodException {
 
 		// Check the MethodInfo cache
-		final MethodInfo info = (MethodInfo) methodInfos.get(method);
+		final MethodInfo info = methodInfos.get(method);
 
 		if (info == null) {
 			// Groan, we have to do this the HARD way.
@@ -149,7 +149,7 @@ public class CachingBloatContext extends PersistentBloatContext {
 
 	public MethodEditor editMethod(final MethodInfo info) {
 		// Check methodEditors cache
-		MethodEditor me = (MethodEditor) methodEditors.get(info);
+		MethodEditor me = methodEditors.get(info);
 
 		if (me == null) {
 			final ClassInfo classInfo = info.declaringClass();
@@ -173,7 +173,7 @@ public class CachingBloatContext extends PersistentBloatContext {
 			throws NoSuchFieldException {
 
 		// Just like we had to do with methods
-		final FieldInfo info = (FieldInfo) fieldInfos.get(field);
+		final FieldInfo info = fieldInfos.get(field);
 
 		if (info == null) {
 			final NameAndType nat = field.nameAndType();
@@ -209,7 +209,7 @@ public class CachingBloatContext extends PersistentBloatContext {
 
 	public FieldEditor editField(final FieldInfo info) {
 		// Check the cache
-		FieldEditor fe = (FieldEditor) fieldEditors.get(info);
+		FieldEditor fe = fieldEditors.get(info);
 
 		BloatContext.db("Editing " + info);
 
@@ -242,20 +242,20 @@ public class CachingBloatContext extends PersistentBloatContext {
 
 		}
 
-		ClassEditor ce = (ClassEditor) classEditors.get(info);
+		ClassEditor ce = classEditors.get(info);
 		if ((ce != null) && ce.isDirty()) {
 			return;
 		}
 
 		// We're done with this class, remove all traces of it
-		ce = (ClassEditor) classEditors.remove(info);
+		ce = classEditors.remove(info);
 		classRC.remove(info);
 		classEditors.remove(info);
 
 		final Iterator iter = classInfos.keySet().iterator();
 		while (iter.hasNext()) {
 			final String name = (String) iter.next();
-			final ClassInfo info2 = (ClassInfo) classInfos.get(name);
+			final ClassInfo info2 = classInfos.get(name);
 			if (info2 == info) {
 				BloatContext.db("Removing ClassInfo: " + name + " -> " + info2);
 				classInfos.remove(name);
@@ -286,7 +286,7 @@ public class CachingBloatContext extends PersistentBloatContext {
 			return;
 		}
 
-		final MethodEditor me = (MethodEditor) methodEditors.get(info);
+		final MethodEditor me = methodEditors.get(info);
 
 		// We should keep dirty methods around. My original thought was
 		// that if we committed dirty methods when they were released, we
@@ -304,7 +304,7 @@ public class CachingBloatContext extends PersistentBloatContext {
 		final Iterator iter = methodInfos.keySet().iterator();
 		while (iter.hasNext()) {
 			final MemberRef ref = (MemberRef) iter.next();
-			final MethodInfo info2 = (MethodInfo) methodInfos.get(ref);
+			final MethodInfo info2 = methodInfos.get(ref);
 			if (info2 == info) {
 				methodInfos.remove(ref);
 				break;
@@ -322,7 +322,7 @@ public class CachingBloatContext extends PersistentBloatContext {
 			return;
 		}
 
-		final FieldEditor fe = (FieldEditor) fieldEditors.get(info);
+		final FieldEditor fe = fieldEditors.get(info);
 		if ((fe != null) && fe.isDirty()) {
 			return;
 		}
@@ -334,7 +334,7 @@ public class CachingBloatContext extends PersistentBloatContext {
 		final Iterator iter = fieldInfos.keySet().iterator();
 		while (iter.hasNext()) {
 			final MemberRef ref = (MemberRef) iter.next();
-			final FieldInfo info2 = (FieldInfo) fieldInfos.get(ref);
+			final FieldInfo info2 = fieldInfos.get(ref);
 			if (info2 == info) {
 				fieldInfos.remove(ref);
 				break;

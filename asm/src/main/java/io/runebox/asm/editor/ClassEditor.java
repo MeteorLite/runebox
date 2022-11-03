@@ -174,6 +174,11 @@ public class ClassEditor {
 		return (this.classInfo().name());
 	}
 
+	public void setName(String newName) {
+		setType(Type.getType("L"+newName+";"));
+		constants.addConstant(Constant.CLASS, type);
+	}
+
 	/**
 	 * Obtain the <tt>EditorContext</tt> for this ClassEditor.
 	 */
