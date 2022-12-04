@@ -22,6 +22,7 @@ import io.runebox.asm.classpath.Library
 import io.runebox.asm.io.JarLibraryReader
 import io.runebox.asm.io.JarLibraryWriter
 import io.runebox.asm.transform.Transformer
+import io.runebox.deobfuscator.transformer.CopyPropagationFixer
 import io.runebox.deobfuscator.transformer.OpaquePredicateRemover
 import io.runebox.deobfuscator.transformer.RedundantGotoRemover
 import io.runebox.deobfuscator.transformer.RuntimeExceptionRemover
@@ -87,6 +88,7 @@ object Deobfuscator {
         register<RuntimeExceptionRemover>()
         register<OpaquePredicateRemover>()
         register<RedundantGotoRemover>()
+        register<CopyPropagationFixer>()
 
         Logger.info("Registered ${transformers.size} transformers.")
     }
