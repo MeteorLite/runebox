@@ -22,6 +22,9 @@ import io.runebox.asm.classpath.Library
 import io.runebox.asm.io.JarLibraryReader
 import io.runebox.asm.io.JarLibraryWriter
 import io.runebox.asm.transform.Transformer
+import io.runebox.deobfuscator.transformer.OpaquePredicateRemover
+import io.runebox.deobfuscator.transformer.RedundantGotoRemover
+import io.runebox.deobfuscator.transformer.RuntimeExceptionRemover
 import org.tinylog.kotlin.Logger
 import java.io.File
 import java.nio.file.Files
@@ -80,6 +83,10 @@ object Deobfuscator {
          * Register transformers
          */
         transformers.clear()
+
+        register<RuntimeExceptionRemover>()
+        register<OpaquePredicateRemover>()
+        register<RedundantGotoRemover>()
 
         Logger.info("Registered ${transformers.size} transformers.")
     }
