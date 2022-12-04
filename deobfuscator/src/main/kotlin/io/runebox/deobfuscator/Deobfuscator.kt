@@ -17,56 +17,59 @@
 
 package io.runebox.deobfuscator
 
-import io.runebox.asm.Asm
-import io.runebox.asm.tree.ClassPool
-import io.runebox.asm.tree.ignored
-import io.runebox.deobfuscator.transformer.AnnotationClassAdder
-import io.runebox.deobfuscator.transformer.DeadCodeRemover
-import io.runebox.deobfuscator.transformer.RuntimeExceptionRemover
+import io.runebox.asm.classpath.ClassPath
+import io.runebox.asm.classpath.Library
+import io.runebox.asm.io.JarLibraryReader
+import io.runebox.asm.io.JarLibraryWriter
+import io.runebox.asm.transform.Transformer
 import org.tinylog.kotlin.Logger
 import java.io.File
+import java.nio.file.Files
 import kotlin.reflect.full.createInstance
 
 object Deobfuscator {
 
-    private lateinit var inputJar: File
-    private lateinit var outputJar: File
+    private lateinit var inputFile: File
+    private lateinit var outputFile: File
     private var runTestClient = false
 
-    private lateinit var pool: ClassPool
-
+    private lateinit var classpath: ClassPath
     private val transformers = mutableListOf<Transformer>()
 
     @JvmStatic
     fun main(args: Array<String>) {
         if(args.size < 2) throw IllegalArgumentException("Usage: deobfuscator.jar <input-jar> <output-jar>")
 
-        inputJar = File(args[0])
-        outputJar = File(args[1])
+        inputFile = File(args[0])
+        outputFile = File(args[1])
 
         if(args.size == 3 && args[2] == "--test") {
             runTestClient = true
         }
 
-        pool = Asm.readJar(inputJar)
-        pool.allClasses.forEach { cls ->
-            if(!cls.name.isObfuscatedName()) {
-                cls.ignored = true
-            }
-        }
-        pool.buildInheritanceGraph()
-        Logger.info("Loaded ${pool.classes.size} classes from jar: ${inputJar.name}.")
+        Logger.info("Loading classes from input jar: ${inputFile.name}.")
+        val runtime = ClassLoader.getPlatformClassLoader()
+        val gamepackLib = Library.read("gamepack", inputFile.toPath(), JarLibraryReader)
+        classpath = ClassPath(
+            runtime,
+            emptyList(),
+            listOf(gamepackLib)
+        )
+        Logger.info("Loaded ${classpath.libraryClasses.toList().size} classes from input jar.")
 
         init()
         run()
 
-        Logger.info("Saving deobfuscated classes to jar: ${outputJar.name}.")
-        Asm.writeJar(outputJar, pool)
+        Logger.info("Saving deobfuscated classes to jar: ${outputFile.name}.")
+
+        if(outputFile.exists()) outputFile.deleteRecursively()
+        Files.createFile(outputFile.toPath())
+
+        gamepackLib.write(outputFile.absoluteFile.toPath(), JarLibraryWriter, classpath)
 
         Logger.info("Deobfuscator completed.")
-
         if(runTestClient) {
-            TestClient(outputJar).start()
+            TestClient(outputFile).start()
         }
     }
 
@@ -78,10 +81,6 @@ object Deobfuscator {
          */
         transformers.clear()
 
-        addTransformer<AnnotationClassAdder>()
-        addTransformer<RuntimeExceptionRemover>()
-        addTransformer<DeadCodeRemover>()
-
         Logger.info("Registered ${transformers.size} transformers.")
     }
 
@@ -92,7 +91,7 @@ object Deobfuscator {
         transformers.forEach { transformer ->
             Logger.info("Running transformer: ${transformer::class.simpleName}.")
             val start = System.currentTimeMillis()
-            transformer.run(pool)
+            transformer.transform(classpath)
             val delta = System.currentTimeMillis() - start
             Logger.info("Finished transform in ${delta}ms.")
         }
@@ -100,7 +99,7 @@ object Deobfuscator {
         Logger.info("Finished running all transformers.")
     }
 
-    private inline fun <reified T : Transformer> addTransformer() {
+    private inline fun <reified T : Transformer> register() {
         transformers.add(T::class.createInstance())
     }
 

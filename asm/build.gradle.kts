@@ -4,4 +4,6 @@ dependencies {
     api("org.ow2.asm:asm-util:_")
     api("org.ow2.asm:asm-tree:_")
     api("com.google.guava:guava:_")
+    api("org.jgrapht:jgrapht-core:_")
+    api("it.unimi.dsi:fastutil:_")
 }
