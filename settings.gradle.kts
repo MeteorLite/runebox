@@ -4,7 +4,11 @@ plugins {
 
 rootProject.name = "runebox"
 
+/**
+ * Internal ASM/Bytecode Modules
+ */
 include(":asm")
 include(":deobfuscator")
 include(":mapper")
+
 include(":logger")
