@@ -15,10 +15,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.runebox.asm.filter
+package io.runebox.asm
 
-object AnyMemberFilter : MemberFilter {
-    override fun matches(owner: String, name: String, desc: String): Boolean {
-        return true
-    }
-}
