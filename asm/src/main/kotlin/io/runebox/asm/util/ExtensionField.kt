@@ -30,6 +30,8 @@ fun <T, R> field() = ExtensionField<R, T>()
 fun <T, R> nullField(init: (R) -> T?) = NullableExtensionField(init)
 fun <T, R> nullField() = NullableExtensionField<R, T?>()
 
+fun <T, R> listField(init: (R) -> MutableList<T> = { mutableListOf() }) = ExtensionField(init)
+
 class WeakIdentityHashMap<K, V> : Map<K, V> {
     private val refQueue = ReferenceQueue<K>()
     private val backingStore = hashMapOf<WeakIdentityReference, V>()
